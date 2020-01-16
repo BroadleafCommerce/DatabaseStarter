@@ -28,6 +28,7 @@ import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 
@@ -76,13 +77,17 @@ public class DatabaseAutoConfiguration {
     }
 
     protected DataSource buildDataSource() throws ClassNotFoundException {
+        String driverClassName = props.getDriver();
         DatabaseDriver driver = DatabaseDriver.fromJdbcUrl(props.getUrl());
+        if (StringUtils.isEmpty(driverClassName)) {
+            driverClassName = driver.getDriverClassName();
+        }
         org.apache.tomcat.jdbc.pool.DataSource ds = DataSourceBuilder
                 .create()
                 .username(props.getUser())
                 .password(props.getPassword())
                 .url(props.getUrl())
-                .driverClassName(driver.getDriverClassName())
+                .driverClassName(driverClassName)
                 .type(org.apache.tomcat.jdbc.pool.DataSource.class)
                 .build();
 
