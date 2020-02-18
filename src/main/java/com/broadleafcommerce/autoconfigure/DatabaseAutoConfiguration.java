@@ -41,6 +41,9 @@ public class DatabaseAutoConfiguration {
 
     private static final Log LOG = LogFactory.getLog(DatabaseAutoConfiguration.class);
 
+    private final String OLD_MYSQL = "com.mysql.jdbc.Driver";
+    private final String NEW_MYSQL = "com.mysql.cj.jdbc.Driver";
+
     @Autowired
     DBProperties props;
 
@@ -79,8 +82,10 @@ public class DatabaseAutoConfiguration {
     protected DataSource buildDataSource() throws ClassNotFoundException {
         String driverClassName = props.getDriver();
         DatabaseDriver driver = DatabaseDriver.fromJdbcUrl(props.getUrl());
+        String suggestedDriverClassName = driver.getDriverClassName();
+        logDriverInconsistencies(driverClassName, suggestedDriverClassName);
         if (StringUtils.isEmpty(driverClassName)) {
-            driverClassName = driver.getDriverClassName();
+            driverClassName = suggestedDriverClassName;
         }
         org.apache.tomcat.jdbc.pool.DataSource ds = DataSourceBuilder
                 .create()
@@ -98,6 +103,24 @@ public class DatabaseAutoConfiguration {
         }
 
         return ds;
+    }
+
+    protected void logDriverInconsistencies(String explicitDriverClassName, String springDriverClassName) {
+        if (springDriverClassName == null && explicitDriverClassName == null) {
+            LOG.error("Application did not set property database.driver and Spring wasn't able to derive driver class from url. Set the database.driver property and/or review property database.url to make sure a valid url is set.");
+        }
+
+        if (NEW_MYSQL.equals(explicitDriverClassName)) {
+            LOG.warn("Application explicitly set the driver class to " + NEW_MYSQL + ". Broadleaf recommends using driver class " + OLD_MYSQL + " as it performs better. Set \"database.driver=" + OLD_MYSQL + "\" to use the more performant driver.");
+        }
+
+        if (explicitDriverClassName == null && NEW_MYSQL.equals(springDriverClassName)) {
+            LOG.warn("Application did not set property database.driver when using MySQL therefore driver class " + NEW_MYSQL + " will be used per Spring's recommendation. Broadleaf suggests using driver class " + OLD_MYSQL + " as it performs better than " + NEW_MYSQL + ".");
+        }
+
+        if (explicitDriverClassName != null && !explicitDriverClassName.equals(springDriverClassName) && !OLD_MYSQL.equals(explicitDriverClassName)) {
+            LOG.warn("Application explicitly set the driver class to " + explicitDriverClassName + " which does not equal Spring's recommended driver class of " + springDriverClassName + ". If this is not on purpose please set the property database.driver to \"database.driver=\" to use Spring's recommended driver.");
+        }
     }
 
 }
