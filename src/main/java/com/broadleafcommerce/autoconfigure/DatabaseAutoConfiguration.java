@@ -45,7 +45,7 @@ public class DatabaseAutoConfiguration {
     private final String NEW_MYSQL = "com.mysql.cj.jdbc.Driver";
 
     @Autowired
-    DBProperties props;
+    protected DBProperties props;
 
     @ConditionalOnMissingBean(name={"webDS"})
     @Bean
@@ -116,10 +116,6 @@ public class DatabaseAutoConfiguration {
 
         if (props.getMaxWait() != null) {
             ds.setMaxWait(props.getMaxWait());
-        }
-
-        if (props.getMaxIdle() != null) {
-            ds.setMinIdle(props.getMaxIdle());
         }
 
         return ds;
