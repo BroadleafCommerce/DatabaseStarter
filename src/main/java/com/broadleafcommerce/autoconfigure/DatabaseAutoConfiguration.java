@@ -114,6 +114,10 @@ public class DatabaseAutoConfiguration {
             ds.setMaxIdle(props.getMaxIdle());
         }
 
+        if (props.getMinIdle() != null) {
+            ds.setMinIdle(props.getMinIdle());
+        }
+
         if (props.getMaxWait() != null) {
             ds.setMaxWait(props.getMaxWait());
         }
