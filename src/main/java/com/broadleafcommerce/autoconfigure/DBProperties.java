@@ -53,7 +53,9 @@ public class DBProperties {
         this.type = type;
     }
 
-    public String getUser() { return user; }
+    public String getUser() {
+        return user;
+    }
 
     public void setUser(String user) {
         this.user = user;

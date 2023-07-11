@@ -47,33 +47,33 @@ public class DatabaseAutoConfiguration {
     @Autowired
     protected DBProperties props;
 
-    @ConditionalOnMissingBean(name={"webDS"})
+    @ConditionalOnMissingBean(name = {"webDS"})
     @Bean
     @Primary
     public DataSource webDS() throws ClassNotFoundException {
         return buildDataSource();
     }
 
-    @ConditionalOnMissingBean(name={"webSecureDS"})
+    @ConditionalOnMissingBean(name = {"webSecureDS"})
     @Bean
     public DataSource webSecureDS() throws ClassNotFoundException {
         return buildDataSource();
     }
 
-    @ConditionalOnMissingBean(name={"webStorageDS"})
+    @ConditionalOnMissingBean(name = {"webStorageDS"})
     @Bean
     public DataSource webStorageDS() throws ClassNotFoundException {
         return buildDataSource();
     }
 
-    @ConditionalOnMissingBean(name={"webEventDS"})
+    @ConditionalOnMissingBean(name = {"webEventDS"})
     @Bean
     public DataSource webEventDS() throws ClassNotFoundException {
         return buildDataSource();
     }
 
-    @ConditionalOnMissingBean(name={"demoDS"})
-    @ConditionalOnClass(name= "com.blcdemo.core.domain.PDSite")
+    @ConditionalOnMissingBean(name = {"demoDS"})
+    @ConditionalOnClass(name = "com.blcdemo.core.domain.PDSite")
     @Bean
     public DataSource demoDS() throws ClassNotFoundException {
         return buildDataSource();
@@ -84,7 +84,7 @@ public class DatabaseAutoConfiguration {
         DatabaseDriver driver = DatabaseDriver.fromJdbcUrl(props.getUrl());
         String suggestedDriverClassName = driver.getDriverClassName();
         logDriverInconsistencies(driverClassName, suggestedDriverClassName);
-        if (StringUtils.isEmpty(driverClassName)) {
+        if (StringUtils.hasText(driverClassName)) {
             driverClassName = suggestedDriverClassName;
         }
         org.apache.tomcat.jdbc.pool.DataSource ds = DataSourceBuilder
