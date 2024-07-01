@@ -84,7 +84,7 @@ public class DatabaseAutoConfiguration {
         DatabaseDriver driver = DatabaseDriver.fromJdbcUrl(props.getUrl());
         String suggestedDriverClassName = driver.getDriverClassName();
         logDriverInconsistencies(driverClassName, suggestedDriverClassName);
-        if (StringUtils.hasText(driverClassName)) {
+        if (!StringUtils.hasLength(driverClassName)) {
             driverClassName = suggestedDriverClassName;
         }
         org.apache.tomcat.jdbc.pool.DataSource ds = DataSourceBuilder
